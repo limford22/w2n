@@ -33,6 +33,19 @@ class TestW2N(unittest.TestCase):
         self.assertEqual(w2n.word_to_num('nine point nine nine nine'), 9.999)
         self.assertEqual(w2n.word_to_num('seventh point nineteen'), 0)
 
+    def test_leading_scale_words(self):
+        # Reproduction tests for Issue #13:
+        # Scale words without explicit leading "one" must not crash with IndexError
+        self.assertEqual(w2n.word_to_num("thousand and five"), 1005)
+        self.assertEqual(w2n.word_to_num("thousand twenty"), 1020)
+        self.assertEqual(w2n.word_to_num("million and ten"), 1000010)
+        self.assertEqual(w2n.word_to_num("billion and one"), 1000000001)
+
+    def test_hundred_prefixed_addition(self):
+        # Scale word 'hundred' followed by smaller numbers must add, not multiply
+        self.assertEqual(w2n.word_to_num("hundred and five"), 105)
+        self.assertEqual(w2n.word_to_num("hundred and twenty"), 120)
+
     def test_negatives(self):
         self.assertRaises(ValueError, w2n.word_to_num, '112-')
         self.assertRaises(ValueError, w2n.word_to_num, '-')
